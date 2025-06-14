@@ -48,5 +48,6 @@ public class ReleaseMojo extends AbstractMojo {
         );
         gitService.add("changelog.md");
         gitService.amend();
+        gitService.tag(nextTag.get());
     }
 }

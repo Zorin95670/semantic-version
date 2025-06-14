@@ -297,6 +297,7 @@ public class GitService {
                 .setName(version)
                 .setMessage("Release " + version)
                 .setAnnotated(true)
+                .setForceUpdate(true)
                 .call();
         } catch (GitAPIException e) {
             throw new RuntimeException(e);
