@@ -21,8 +21,14 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Extract version from pom.xml
+        id: get_version
+        run: |
+          VERSION=$(grep -m1 '<version>' pom.xml | sed -E 's/.*<version>([^<]+)<\/version>.*/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Run Maven Release
-        run: mvn clean install && mvn semantic-version:release
+        run: mvn clean install && mvn io.github.zorin95670:semantic-version:${{ steps.get_version.outputs.version }}:release
 
       - name: Push commit and tags
         run: |
