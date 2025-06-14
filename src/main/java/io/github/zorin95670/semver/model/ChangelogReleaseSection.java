@@ -22,7 +22,7 @@ public class ChangelogReleaseSection {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             .withZone(ZoneId.systemDefault());
         String formattedDate = formatter.format(date);
-        title = String.format("[%s] - %s", version, formattedDate);
+        title = String.format("[%s] - %s", version.substring(1), formattedDate);
         this.version = version;
         isUnreleased = false;
     }
