@@ -27,9 +27,9 @@
     <maven>${maven.version}</maven>
   </prerequisites>
   <scm>
-    <connection>scm:git:git://github.com/Zorin95670/spring-query-filter.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com:Zorin95670/spring-query-filter.git</developerConnection>
-    <url>https://github.com/Zorin95670/spring-query-filter</url>
+    <connection>scm:git:git://github.com/Zorin95670/semantic-version.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:Zorin95670/semantic-version.git</developerConnection>
+    <url>https://github.com/Zorin95670/semantic-version</url>
   </scm>
   <properties>
     <maven.compiler.target>21</maven.compiler.target>
