@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>io.github.zorin95670</groupId>
   <artifactId>semantic-version</artifactId>
-  <version>0.1.0</version>
+  <version>v0.1.0</version>
   <packaging>maven-plugin</packaging>
-
   <name>semantic-version Maven Plugin</name>
   <description>Maven plugin with commands to generate changelog and perform releases.</description>
   <url>https://github.com/Zorin95670/semantic-version</url>
-
   <licenses>
     <license>
       <name>The Apache License, Version 2.0</name>
@@ -21,7 +16,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <developers>
     <developer>
       <id>Zorin95670</id>
@@ -29,24 +23,20 @@
       <email>moittie.vincent@gmail.com</email>
     </developer>
   </developers>
-
+  <prerequisites>
+    <maven>${maven.version}</maven>
+  </prerequisites>
   <scm>
     <connection>scm:git:git://github.com/Zorin95670/spring-query-filter.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:Zorin95670/spring-query-filter.git</developerConnection>
     <url>https://github.com/Zorin95670/spring-query-filter</url>
   </scm>
-
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <maven.version>3.6.3</maven.version>
+    <maven.compiler.source>21</maven.compiler.source>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
-  <prerequisites>
-    <maven>${maven.version}</maven>
-  </prerequisites>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -71,7 +61,7 @@
       <artifactId>maven-compat</artifactId>
       <version>${maven.version}</version>
       <scope>test</scope>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
       <artifactId>maven-plugin-annotations</artifactId>
@@ -90,20 +80,17 @@
       <version>3.3.0</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
       <artifactId>org.eclipse.jgit</artifactId>
       <version>7.3.0.202506031305-r</version>
     </dependency>
-
     <dependency>
       <groupId>com.hubspot.jinjava</groupId>
       <artifactId>jinjava</artifactId>
       <version>2.8.0</version>
     </dependency>
   </dependencies>
-
   <build>
     <pluginManagement>
       <plugins>
@@ -111,7 +98,6 @@
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.4.0</version>
         </plugin>
-        <!-- see http://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_maven-plugin_packaging -->
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
           <version>3.3.1</version>
@@ -146,15 +132,9 @@
         </plugin>
       </plugins>
     </pluginManagement>
-
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <configuration>
-          <goalPrefix>semantic-version</goalPrefix>
-          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-        </configuration>
         <executions>
           <execution>
             <id>mojo-descriptor</id>
@@ -169,16 +149,18 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <goalPrefix>semantic-version</goalPrefix>
+          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+        </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
         </configuration>
       </plugin>
-      <!-- Maven publisher -->
       <plugin>
         <groupId>org.sonatype.central</groupId>
         <artifactId>central-publishing-maven-plugin</artifactId>
@@ -189,9 +171,7 @@
           <waitUntil>published</waitUntil>
         </configuration>
       </plugin>
-
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.11.1</version>
         <executions>
@@ -203,9 +183,7 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
         <version>3.3.1</version>
         <executions>
@@ -220,14 +198,12 @@
       </plugin>
     </plugins>
   </build>
-
   <profiles>
     <profile>
       <id>release</id>
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <version>3.2.7</version>
             <executions>
