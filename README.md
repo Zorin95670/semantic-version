@@ -30,11 +30,29 @@ git push origin main
 git push origin --tags
 ```
 
+### ✅ `check-commits`
+
+Validates commit messages against [Conventional Commits](https://www.conventionalcommits.org/) and custom rules:
+
+| Section        | Supported Prefixes                         |
+| -------------- | ------------------------------------------ |
+| **Added**      | `feat`                                     |
+| **Fixed**      | `fix`                                      |
+| **Changed**    | `perf`, `refactor`, `style`, `ci`, `build` |
+| **Removed**    | `removed`                                  |
+| **Security**   | `security`                                 |
+| **Deprecated** | `deprecated`                               |
+
+* Logs a warning for any invalid commit prefix.
+* Can be configured to fail the build if any invalid commit is found using the `failOnWarning` parameter:
+
 ## Usage
 
 Add the plugin to your project or run it using the CLI:
 
 ```bash
+mvn io.github.zorin95670:semantic-version:check-commit
+mvn io.github.zorin95670:semantic-version:check-commit -DfailOnWarning=true
 mvn io.github.zorin95670:semantic-version:changelog
 mvn io.github.zorin95670:semantic-version:changelog -DdryRun=true
 mvn io.github.zorin95670:semantic-version:release
