@@ -23,7 +23,7 @@ public class MavenService {
             MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
             Model model = xpp3Reader.read(reader);
 
-            model.setVersion(version);
+            model.setVersion(version.substring(1));
 
             try (FileWriter writer = new FileWriter(pomFile)) {
                 MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
