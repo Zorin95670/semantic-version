@@ -1,5 +1,7 @@
 package io.github.zorin95670.semver.service;
 
+import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.logging.Log;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.lib.ObjectId;
@@ -321,5 +323,67 @@ public class GitService {
         }
 
         return null;
+    }
+
+    public void checkCommitNames(boolean failOnWarning, Log log) throws MojoFailureException {
+        List<String> validPrefixes = Arrays.asList(
+            "feat", "fix", "perf", "refactor", "style", "ci", "build",
+            "removed", "security", "deprecated"
+        );
+
+        Repository repo = git.getRepository();
+
+        Iterable<RevCommit> commits;
+
+        try {
+            List<Ref> tagList = git.tagList().call();
+            RevCommit lastTaggedCommit = null;
+
+            if (!tagList.isEmpty()) {
+                RevWalk revWalk = new RevWalk(repo);
+                RevCommit latest = null;
+                for (Ref tag : tagList) {
+                    RevCommit commit = revWalk.parseCommit(repo.resolve(tag.getName()));
+                    if (latest == null || commit.getCommitTime() > latest.getCommitTime()) {
+                        latest = commit;
+                    }
+                }
+                lastTaggedCommit = latest;
+                revWalk.dispose();
+            }
+
+            if (lastTaggedCommit != null) {
+                commits = git.log().add(repo.resolve("HEAD")).not(lastTaggedCommit).call();
+            } else {
+                commits = git.log().call();
+            }
+        } catch (GitAPIException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        boolean hasError = false;
+        boolean hasWarning = false;
+
+        for (RevCommit commit : commits) {
+            String message = commit.getShortMessage();
+
+            if (!message.matches("^[a-z]+(\\([\\w\\-]+\\))?: .+")) {
+                log.error("Invalid commit format: \"" + message + "\"");
+                hasError = true;
+                continue;
+            }
+
+            String type = message.split("[:(]")[0];
+            if (!validPrefixes.contains(type)) {
+                log.warn("Unsupported commit prefix: \"" + message + "\"");
+                hasWarning = true;
+            }
+        }
+
+        if (hasError || (failOnWarning && hasWarning)) {
+            throw new MojoFailureException("Some commits do not follow the Conventional Commit format.");
+        } else {
+            log.info("✅ all commits are valid.");
+        }
     }
 }
