@@ -14,7 +14,17 @@ This plugin provides two main commands:
 Generates or updates a `CHANGELOG.md` file using Git history.
 
 * Supports a `dryRun` option to preview the next changelog without writing to disk.
+* Supports a scope option to include only commits containing a specific scope.
+
+```bash
+mvn io.github.zorin95670:semantic-version:changelog -DtagPrefix=plugin-a@ -Dscope=plugin-a
+# Example: 
+# chore(plugin-a): Test -> Included
+# chore(plugin-b): Test -> Ignored
+```
+
 * Supports a `tagPrefix` option to filter Git tags by prefix when generating the changelog (e.g., only include tags like `plugin-a@1.2.0`). Default value is `v`
+
 
 ```bash
 mvn io.github.zorin95670:semantic-version:changelog -DtagPrefix=plugin-a@
@@ -36,7 +46,7 @@ Performs the following operations:
 * Creates a Git tag for the new release with the specified prefix.
 
 ```bash
-mvn io.github.zorin95670:semantic-version:release -DtagPrefix=plugin-a@
+mvn io.github.zorin95670:semantic-version:release -DtagPrefix=plugin-a@ -Dscope=plugin-a
 ```
 
 When `tagPrefix` is specified:
@@ -44,6 +54,11 @@ When `tagPrefix` is specified:
 * The next version is determined **only from commits** since the **last tag that starts with that prefix**.
 * The generated tag will also include the prefix (e.g., `plugin-a@1.2.0`).
 * Default value is `v` 
+
+When `scope` is specified:
+
+* Only commits that include the scope `(plugin-a)` will be considered for version bumping and changelog generation.
+* This is useful for monorepos or multi-module projects where only a subset of commits should affect a specific release.
 
 > ℹ️ After running the `release` goal, make sure to **push the commit and the tag** manually:
 

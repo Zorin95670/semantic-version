@@ -19,6 +19,9 @@ public class ReleaseMojo extends AbstractMojo {
     @Parameter(property = "tagPrefix", defaultValue = "v")
     private String tagPrefix;
 
+    @Parameter(property = "scope")
+    private String scope;
+
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
@@ -31,7 +34,7 @@ public class ReleaseMojo extends AbstractMojo {
         ChangelogService changelogService = new ChangelogService(basedir);
 
         var lastTag = gitService.getLastTag(tagPrefix).orElse(null);
-        var commits = gitService.getCommitsFrom(lastTag);
+        var commits = gitService.getCommitsFrom(lastTag, scope);
         var opt = gitService.getNewTagName(commits, lastTag, tagPrefix);
 
         if (opt.isEmpty()) {
@@ -47,7 +50,7 @@ public class ReleaseMojo extends AbstractMojo {
         gitService.tag(nextTag);
         changelogService.generateFromBeginning(
             gitService.getUrl(),
-            gitService.getCommitsFrom(null),
+            gitService.getCommitsFrom(null, scope),
             gitService.getAllTags(null, tagPrefix),
             false,
             tagPrefix
