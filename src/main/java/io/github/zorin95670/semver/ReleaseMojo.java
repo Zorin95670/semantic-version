@@ -16,6 +16,9 @@ import java.io.File;
 @Mojo(name = "release", defaultPhase = LifecyclePhase.NONE)
 public class ReleaseMojo extends AbstractMojo {
 
+    @Parameter(property = "tagPrefix", defaultValue = "v")
+    private String tagPrefix;
+
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
@@ -27,27 +30,30 @@ public class ReleaseMojo extends AbstractMojo {
         GitService gitService = new GitService(basedir);
         ChangelogService changelogService = new ChangelogService(basedir);
 
-        var lastTag = gitService.getLastTag().orElse(null);
+        var lastTag = gitService.getLastTag(tagPrefix).orElse(null);
         var commits = gitService.getCommitsFrom(lastTag);
-        var nextTag = gitService.getNewTagName(commits, lastTag);
+        var opt = gitService.getNewTagName(commits, lastTag, tagPrefix);
 
-        if (nextTag.isEmpty()) {
+        if (opt.isEmpty()) {
             getLog().info("No new tag found");
             return;
         }
 
-        mavenService.upgradeVersion(nextTag.get());
+        var nextTag = opt.get();
+
+        mavenService.upgradeVersion(nextTag, tagPrefix);
         gitService.add("pom.xml");
-        gitService.commit(String.format("chore: bump to version %s [ci skip]", nextTag.get()));
-        gitService.tag(nextTag.get());
+        gitService.commit(String.format("chore: bump to version %s [ci skip]", nextTag));
+        gitService.tag(nextTag);
         changelogService.generateFromBeginning(
             gitService.getUrl(),
             gitService.getCommitsFrom(null),
-            gitService.getAllTags(null),
-            false
+            gitService.getAllTags(null, tagPrefix),
+            false,
+            tagPrefix
         );
         gitService.add("changelog.md");
         gitService.amend();
-        gitService.tag(nextTag.get());
+        gitService.tag(nextTag);
     }
 }

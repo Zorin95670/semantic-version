@@ -7,28 +7,52 @@ semantic versioning principles.
 
 This plugin provides two main commands:
 
+---
+
 ### 🔧 `changelog`
 
 Generates or updates a `CHANGELOG.md` file using Git history.
 
-- Supports a `dryRun` option to preview the next changelog without writing to disk.
+* Supports a `dryRun` option to preview the next changelog without writing to disk.
+* Supports a `tagPrefix` option to filter Git tags by prefix when generating the changelog (e.g., only include tags like `plugin-a@1.2.0`). Default value is `v`
+
+```bash
+mvn io.github.zorin95670:semantic-version:changelog -DtagPrefix=plugin-a@
+```
+
+Only tags starting with the specified `tagPrefix` will be considered when generating the changelog.
+
+---
 
 ### 🚀 `release`
 
 Performs the following operations:
 
-- Determines the next semantic version based on commit history.
-- Updates the version in the `pom.xml`.
-- Generates or updates the `CHANGELOG.md`.
-- Commits the changes.
-- Creates a Git tag for the new release.
+* Determines the next semantic version based on commit history.
+* **Only includes commits since the last tag that starts with the provided `tagPrefix`**.
+* Updates the version in the `pom.xml`.
+* Generates or updates the `CHANGELOG.md`.
+* Commits the changes.
+* Creates a Git tag for the new release with the specified prefix.
 
-After running the `release` goal, make sure to **push the commit and the tag** manually:
+```bash
+mvn io.github.zorin95670:semantic-version:release -DtagPrefix=plugin-a@
+```
+
+When `tagPrefix` is specified:
+
+* The next version is determined **only from commits** since the **last tag that starts with that prefix**.
+* The generated tag will also include the prefix (e.g., `plugin-a@1.2.0`).
+* Default value is `v` 
+
+> ℹ️ After running the `release` goal, make sure to **push the commit and the tag** manually:
 
 ```bash
 git push origin main
 git push origin --tags
 ```
+
+---
 
 ### ✅ `check-commits`
 
@@ -44,7 +68,9 @@ Validates commit messages against [Conventional Commits](https://www.conventiona
 | **Deprecated** | `deprecated`                               |
 
 * Logs a warning for any invalid commit prefix.
-* Can be configured to fail the build if any invalid commit is found using the `failOnWarning` parameter:
+* Can be configured to fail the build if any invalid commit is found using the `failOnWarning` parameter.
+
+---
 
 ## Usage
 
@@ -55,8 +81,11 @@ mvn io.github.zorin95670:semantic-version:check-commit
 mvn io.github.zorin95670:semantic-version:check-commit -DfailOnWarning=true
 mvn io.github.zorin95670:semantic-version:changelog
 mvn io.github.zorin95670:semantic-version:changelog -DdryRun=true
-mvn io.github.zorin95670:semantic-version:release
+mvn io.github.zorin95670:semantic-version:changelog -DtagPrefix=plugin-a@
+mvn io.github.zorin95670:semantic-version:release -DtagPrefix=plugin-a@
 ```
+
+---
 
 ## Version Bumping Rules
 
@@ -64,54 +93,37 @@ The plugin determines the next semantic version based on commit messages using t
 
 ### 🔼 Major version bump
 
-The major version is incremented if:
+Incremented if:
 
-- The commit contains `BREAKING CHANGE` or `BREAKING-CHANGE` in the body or footer.
-- The commit header includes a `!` after the type, e.g.:
-
-```
-feat!: introduce breaking change
-fix!: drop support for old behavior
-```
+* The commit contains `BREAKING CHANGE` or `BREAKING-CHANGE` in the body or footer.
+* The commit header includes a `!` after the type (e.g., `feat!:`, `fix!:`).
 
 ### 🔼 Minor version bump
 
-The minor version is incremented if:
+Incremented if:
 
-- The commit type is `feat` (feature addition) without a breaking change.
-
-Example:
-
-```
-feat: add changelog dry-run option
-```
+* The commit type is `feat`.
 
 ### 🔼 Patch version bump
 
-The patch version is incremented if:
+Incremented if:
 
-- The commit type is `fix`.
-
-Example:
-
-```
-fix: correct issue with release tag
-```
+* The commit type is `fix`.
 
 ### No version bump
 
-Commits with other types (e.g. `chore`, `style`, `refactor`, `ci`) will not trigger a version change.
+If only commits of type `chore`, `style`, `refactor`, etc., are found, the version remains unchanged.
 
-Only the highest-priority rule applies per release.  
-For example, if both a `feat` and a `BREAKING CHANGE` are found, the major version will be incremented.
+Only the highest-priority rule applies per release.
+
+---
 
 ## Commit Types
 
-The plugin categorizes commits into changelog sections based on conventional commit prefixes.  
-Each commit must start with a valid type to be included correctly.
+The plugin categorizes commits into changelog sections based on conventional commit prefixes:
 
 | Section        | Supported Prefixes                         |
-|----------------|--------------------------------------------|
+| -------------- | ------------------------------------------ |
 | **Added**      | `feat`                                     |
 | **Fixed**      | `fix`                                      |
 | **Changed**    | `perf`, `refactor`, `style`, `ci`, `build` |
@@ -119,9 +131,9 @@ Each commit must start with a valid type to be included correctly.
 | **Security**   | `security`                                 |
 | **Deprecated** | `deprecated`                               |
 
-Example of a properly formatted commit:
+Example of a valid commit:
 
-```
+```text
 feat: add support for dry-run option
 ```
 
