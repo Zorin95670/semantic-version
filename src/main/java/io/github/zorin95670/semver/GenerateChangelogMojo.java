@@ -16,6 +16,9 @@ public class GenerateChangelogMojo extends AbstractMojo {
     @Parameter(property = "tagPrefix", defaultValue = "v")
     private String tagPrefix;
 
+    @Parameter(property = "scope")
+    private String scope;
+
     @Parameter(property = "dryRun", defaultValue = "false")
     private boolean dryRun;
 
@@ -30,7 +33,7 @@ public class GenerateChangelogMojo extends AbstractMojo {
 
         changelogService.generateFromBeginning(
             gitService.getUrl(),
-            gitService.getCommitsFrom(null),
+            gitService.getCommitsFrom(null, scope),
             gitService.getAllTags(null, tagPrefix),
             dryRun,
             tagPrefix

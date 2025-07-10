@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.eclipse.jgit.lib.Constants.R_TAGS;
@@ -153,8 +154,9 @@ public class GitService {
         }
     }
 
-    public List<RevCommit> getCommitsFrom(RevTag origin) {
+    public List<RevCommit> getCommitsFrom(RevTag origin, String scope) {
         List<RevCommit> commits = new ArrayList<>();
+        var scopePattern = Pattern.compile("^\\w+\\(" + Pattern.quote(scope) + "\\):");
 
         try (RevWalk revWalk = new RevWalk(repository)) {
             RevCommit head = revWalk.parseCommit(repository.resolve("HEAD"));
@@ -172,7 +174,10 @@ public class GitService {
                 if (stopCommit != null && commit.equals(stopCommit)) {
                     break;
                 }
-                commits.add(commit);
+
+                if (scope.isEmpty() || scopePattern.matcher(commit.getShortMessage()).matches()) {
+                    commits.add(commit);
+                }
             }
 
         } catch (IOException e) {
@@ -222,7 +227,7 @@ public class GitService {
             // Exemple header : feat!: message, fix(scope): message
             // Regex pour extraire type et "!" :
             // ^(\w+)(!)?(\(.+\))?: .+
-            java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("^(\\w+)(!)?(\\(.+\\))?:").matcher(header);
+            Matcher matcher = Pattern.compile("^(\\w+)(!)?(\\(.+\\))?:").matcher(header);
 
             if (matcher.find()) {
                 String type = matcher.group(1);
