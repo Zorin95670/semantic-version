@@ -13,6 +13,9 @@ import java.io.File;
 @Mojo(name = "changelog", defaultPhase = LifecyclePhase.NONE)
 public class GenerateChangelogMojo extends AbstractMojo {
 
+    @Parameter(property = "tagPrefix", defaultValue = "v")
+    private String tagPrefix;
+
     @Parameter(property = "dryRun", defaultValue = "false")
     private boolean dryRun;
 
@@ -28,8 +31,9 @@ public class GenerateChangelogMojo extends AbstractMojo {
         changelogService.generateFromBeginning(
             gitService.getUrl(),
             gitService.getCommitsFrom(null),
-            gitService.getAllTags(null),
-            dryRun
+            gitService.getAllTags(null, tagPrefix),
+            dryRun,
+            tagPrefix
         );
     }
 }

@@ -47,7 +47,7 @@ public class GitService {
         }
     }
 
-    public Map<String, List<String>> getAllTags(RevTag origin) {
+    public Map<String, List<String>> getAllTags(RevTag origin, String tagPrefix) {
         try (RevWalk revWalk = new RevWalk(repository)) {
             RevCommit headCommit = revWalk.parseCommit(repository.resolve("HEAD"));
 
@@ -56,8 +56,8 @@ public class GitService {
                 originCommit = revWalk.parseCommit(origin.getObject());
             }
 
-            // Expression régulière SemVer : vX.Y.Z
-            Pattern semverPattern = Pattern.compile("^v\\d+\\.\\d+\\.\\d+$");
+            // Expression régulière SemVer : X.Y.Z
+            Pattern semverPattern = Pattern.compile("^\\d+\\.\\d+\\.\\d+$");
 
             List<Ref> tagRefs = repository.getRefDatabase().getRefsByPrefix(R_TAGS);
             Map<ObjectId, List<String>> tagMap = new HashMap<>();
@@ -65,8 +65,12 @@ public class GitService {
             for (Ref ref : tagRefs) {
                 String tagName = Repository.shortenRefName(ref.getName());
 
+                if (!tagName.startsWith(tagPrefix)) {
+                    continue;
+                }
+
                 // On filtre les tags non SemVer
-                if (!semverPattern.matcher(tagName).matches()) {
+                if (!semverPattern.matcher(tagName.substring(tagPrefix.length())).matches()) {
                     continue;
                 }
 
@@ -108,7 +112,7 @@ public class GitService {
     }
 
 
-    public Optional<RevTag> getLastTag() {
+    public Optional<RevTag> getLastTag(String tagPrefix) {
         try (RevWalk revWalk = new RevWalk(repository)) {
             RevCommit headCommit = revWalk.parseCommit(repository.resolve("HEAD"));
             List<Ref> tagRefs = repository.getRefDatabase().getRefsByPrefix(R_TAGS);
@@ -135,6 +139,7 @@ public class GitService {
                     }
                 })
                 .filter(Objects::nonNull)
+                .filter(tagRef -> tagRef.getTagName().startsWith(tagPrefix))
                 .max(Comparator.comparingInt(tag -> {
                     try {
                         RevCommit targetCommit = revWalk.parseCommit(tag.getObject());
@@ -177,14 +182,14 @@ public class GitService {
         return commits;
     }
 
-    public Optional<String> getNewTagName(List<RevCommit> commits, RevTag lastTag) {
+    public Optional<String> getNewTagName(List<RevCommit> commits, RevTag lastTag, String tagPrefix) {
         int major = 0, minor = 0, patch = 0;
 
         // 1. Extraire version depuis le dernier tag (format vX.Y.Z)
         if (lastTag != null) {
             String tagName = lastTag.getTagName().trim();
-            if (tagName.startsWith("v")) {
-                tagName = tagName.substring(1);
+            if (tagName.startsWith(tagPrefix)) {
+                tagName = tagName.substring(tagPrefix.length());
             }
             String[] parts = tagName.split("\\.");
             if (parts.length >= 3) {
@@ -255,7 +260,7 @@ public class GitService {
             return Optional.empty();
         }
 
-        return Optional.of(String.format("v%d.%d.%d", major, minor, patch));
+        return Optional.of(String.format("%s%d.%d.%d", tagPrefix, major, minor, patch));
     }
 
     public void add(String pattern) {

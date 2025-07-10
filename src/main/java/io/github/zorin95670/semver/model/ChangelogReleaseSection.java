@@ -18,11 +18,11 @@ public class ChangelogReleaseSection {
     private String title;
     public String version;
 
-    public void setTitle(String version, Instant date) {
+    public void setTitle(String version, Instant date, String tagPrefix) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             .withZone(ZoneId.systemDefault());
         String formattedDate = formatter.format(date);
-        title = String.format("[%s] - %s", version.substring(1), formattedDate);
+        title = String.format("[%s] - %s", version.substring(tagPrefix.length()), formattedDate);
         this.version = version;
         isUnreleased = false;
     }

@@ -22,7 +22,7 @@ public class ChangelogService {
         this.projectDir = projectDir;
     }
 
-    public void generateFromBeginning(String url, List<RevCommit> commits, Map<String, List<String>> taggedCommits, boolean dryRun) {
+    public void generateFromBeginning(String url, List<RevCommit> commits, Map<String, List<String>> taggedCommits, boolean dryRun, String tagPrefix) {
         List<ChangelogReleaseSection> releaseSections = new ArrayList<>();
 
         commits.forEach(commit -> {
@@ -31,7 +31,7 @@ public class ChangelogService {
             if (releaseSections.isEmpty()) {
                 ChangelogReleaseSection currentSection = new ChangelogReleaseSection();
 
-                tag.ifPresent(s -> currentSection.setTitle(s, Instant.ofEpochSecond(commit.getCommitTime())));
+                tag.ifPresent(s -> currentSection.setTitle(s, Instant.ofEpochSecond(commit.getCommitTime()), tagPrefix));
 
                 currentSection.add(commit);
                 releaseSections.add(currentSection);
@@ -40,7 +40,7 @@ public class ChangelogService {
 
             if (tag.isPresent()) {
                 ChangelogReleaseSection currentSection = new ChangelogReleaseSection();
-                currentSection.setTitle(tag.get(), Instant.ofEpochSecond(commit.getCommitTime()));
+                currentSection.setTitle(tag.get(), Instant.ofEpochSecond(commit.getCommitTime()), tagPrefix);
                 currentSection.add(commit);
                 releaseSections.add(currentSection);
                 return;
@@ -72,13 +72,13 @@ public class ChangelogService {
             }
 
             if (previousVersion == null) {
-                versions.add(String.format("[%s]: %s/releases/tag/%s", currentVersion.substring(1), url, currentVersion));
+                versions.add(String.format("[%s]: %s/releases/tag/%s", currentVersion.substring(tagPrefix.length()), url, currentVersion));
                 continue;
             }
 
             versions.add(String.format(
                 "[%s]: %s/compare/%s...%s",
-                currentVersion.substring(1),
+                currentVersion.substring(tagPrefix.length()),
                 url,
                 previousVersion,
                 currentVersion
