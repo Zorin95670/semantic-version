@@ -26,6 +26,12 @@ public class GenerateChangelogMojo extends AbstractMojo {
     private File basedir;
 
     public void execute() throws MojoExecutionException {
+        if (scope == null) {
+            scope = "";
+        }
+        if (tagPrefix == null) {
+            tagPrefix = "v";
+        }
         getLog().info("Generate Changelog plugin started");
         GitService gitService = new GitService(basedir);
         ChangelogService changelogService = new ChangelogService(basedir);
