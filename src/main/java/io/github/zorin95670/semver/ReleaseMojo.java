@@ -19,7 +19,7 @@ public class ReleaseMojo extends AbstractMojo {
     @Parameter(property = "tagPrefix", defaultValue = "v")
     private String tagPrefix;
 
-    @Parameter(property = "scope")
+    @Parameter(property = "scope", defaultValue = "")
     private String scope;
 
     @Parameter(defaultValue = "${project}", readonly = true)
@@ -29,6 +29,12 @@ public class ReleaseMojo extends AbstractMojo {
     private File basedir;
 
     public void execute() throws MojoExecutionException {
+        if (scope == null) {
+            scope = "";
+        }
+        if (tagPrefix == null) {
+            tagPrefix = "v";
+        }
         MavenService mavenService = new MavenService(project);
         GitService gitService = new GitService(basedir);
         ChangelogService changelogService = new ChangelogService(basedir);
