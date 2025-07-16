@@ -84,6 +84,13 @@ Validates commit messages against [Conventional Commits](https://www.conventiona
 
 * Logs a warning for any invalid commit prefix.
 * Can be configured to fail the build if any invalid commit is found using the `failOnWarning` parameter.
+* Can skip merge commits by enabling the `noMerge` parameter.
+
+```bash
+mvn io.github.zorin95670:semantic-version:0.3.0:check-commit \
+  -DfailOnWarning=true \
+  -DnoMerge=true
+```
 
 ---
 
