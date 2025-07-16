@@ -12,6 +12,9 @@ import java.io.File;
 @Mojo(name = "check-commit", defaultPhase = LifecyclePhase.NONE)
 public class CheckCommitMojo extends AbstractMojo {
 
+    @Parameter(property = "noMerge", defaultValue = "false")
+    private boolean noMerge;
+
     @Parameter(property = "failOnWarning", defaultValue = "false")
     private boolean failOnWarning;
 
@@ -22,6 +25,6 @@ public class CheckCommitMojo extends AbstractMojo {
         getLog().info("Check commit plugin started");
         GitService gitService = new GitService(basedir);
 
-        gitService.checkCommitNames(failOnWarning, getLog());
+        gitService.checkCommitNames(failOnWarning, getLog(), noMerge);
     }
 }

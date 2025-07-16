@@ -335,7 +335,7 @@ public class GitService {
         return null;
     }
 
-    public void checkCommitNames(boolean failOnWarning, Log log) throws MojoFailureException {
+    public void checkCommitNames(boolean failOnWarning, Log log, boolean noMerge) throws MojoFailureException {
         List<String> validPrefixes = Arrays.asList(
             "feat", "fix", "perf", "refactor", "style", "ci", "build",
             "removed", "security", "deprecated"
@@ -376,6 +376,11 @@ public class GitService {
 
         for (RevCommit commit : commits) {
             String message = commit.getShortMessage();
+
+            if (commit.getParentCount() > 1) {
+                log.info("Skipping merge commit: \"" + message + "\"");
+                continue;
+            }
 
             if (!message.matches("^[a-z]+(\\([\\w\\-]+\\))?: .+")) {
                 log.error("Invalid commit format: \"" + message + "\"");
