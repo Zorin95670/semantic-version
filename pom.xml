@@ -169,6 +169,7 @@
         <configuration>
           <publishingServerId>central</publishingServerId>
           <waitUntil>published</waitUntil>
+          <autoPublish>true</autoPublish>
         </configuration>
       </plugin>
       <plugin>
