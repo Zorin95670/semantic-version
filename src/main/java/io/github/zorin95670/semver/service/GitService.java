@@ -37,7 +37,8 @@ public class GitService {
     public void initRepository(File projectDir) {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         try {
-            repository = builder.setGitDir(new File(projectDir, ".git"))
+            repository = builder
+                .setWorkTree(projectDir)
                 .readEnvironment()
                 .findGitDir()
                 .build();
