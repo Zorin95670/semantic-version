@@ -157,10 +157,18 @@ public class GitService {
 
     public List<RevCommit> getCommitsFrom(RevTag origin, String scope) {
         List<RevCommit> commits = new ArrayList<>();
-        var scopePattern = Pattern.compile("^\\w+\\(" + Pattern.quote(scope) + "\\):");
+        Pattern scopePattern = null;
+        if (scope != null && !scope.isEmpty()) {
+            scopePattern = Pattern.compile("^\\s*\\w+\\(" + Pattern.quote(scope) + "\\):.*");
+        }
 
         try (RevWalk revWalk = new RevWalk(repository)) {
-            RevCommit head = revWalk.parseCommit(repository.resolve("HEAD"));
+            ObjectId headId = repository.resolve("HEAD^{commit}");
+            if (headId == null) {
+                return commits; // pas de commits
+            }
+
+            RevCommit head = revWalk.parseCommit(headId);
             revWalk.markStart(head);
 
             RevCommit stopCommit = null;
@@ -176,7 +184,7 @@ public class GitService {
                     break;
                 }
 
-                if (scope.isEmpty() || scopePattern.matcher(commit.getShortMessage()).matches()) {
+                if (scopePattern == null || scopePattern.matcher(commit.getShortMessage()).matches()) {
                     commits.add(commit);
                 }
             }
@@ -247,8 +255,6 @@ public class GitService {
                 // on ignore les autres types
             }
         }
-
-        boolean changed = true;
 
         // 3. Appliquer incrément en priorité : MAJOR > MINOR > PATCH
         if (incrementMajor) {
