@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.github.zorin95670</groupId>
   <artifactId>semantic-version</artifactId>
-  <version>0.4.1</version>
+  <version>0.4.2</version>
   <packaging>maven-plugin</packaging>
   <name>semantic-version Maven Plugin</name>
   <description>Maven plugin with commands to generate changelog and perform releases.</description>
