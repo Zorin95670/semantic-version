@@ -18,7 +18,7 @@ public class CheckCommitMojo extends AbstractMojo {
     @Parameter(property = "failOnWarning", defaultValue = "false")
     private boolean failOnWarning;
 
-    @Parameter(defaultValue = "${project.basedir}", readonly = true)
+    @Parameter(property = "basedir", defaultValue = "${basedir}", readonly = true)
     private File basedir;
 
     public void execute() throws MojoFailureException {
