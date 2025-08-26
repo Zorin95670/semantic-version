@@ -22,7 +22,8 @@ public class ChangelogService {
         this.projectDir = projectDir;
     }
 
-    public void generateFromBeginning(String url, List<RevCommit> commits, Map<String, List<String>> taggedCommits, boolean dryRun, String tagPrefix) {
+    public void generateFromBeginning(String url, List<RevCommit> commits,
+                                      Map<String, List<String>> taggedCommits, boolean dryRun, String tagPrefix) {
         List<ChangelogReleaseSection> releaseSections = new ArrayList<>();
 
         commits.forEach(commit -> {

@@ -25,6 +25,9 @@ public class GenerateChangelogMojo extends AbstractMojo {
     @Parameter(property = "basedir", defaultValue = "${basedir}", readonly = true)
     private File basedir;
 
+    @Parameter(property = "workingdir", defaultValue = "${basedir}", readonly = true)
+    private File workingdir;
+
     public void execute() throws MojoExecutionException {
         if (scope == null) {
             scope = "";
@@ -34,7 +37,7 @@ public class GenerateChangelogMojo extends AbstractMojo {
         }
         getLog().info("Generate Changelog plugin started");
         GitService gitService = new GitService(basedir);
-        ChangelogService changelogService = new ChangelogService(basedir);
+        ChangelogService changelogService = new ChangelogService(workingdir);
 
 
         changelogService.generateFromBeginning(
