@@ -16,9 +16,7 @@ public class MavenService {
         this.project = project;
     }
 
-    public void upgradeVersion(String version, String tagPrefix) {
-        File pomFile = project.getFile(); // usually pom.xml
-
+    public void upgradeVersion(String version, File pomFile, String tagPrefix) {
         try (FileReader reader = new FileReader(pomFile)) {
             MavenXpp3Reader xpp3Reader = new MavenXpp3Reader();
             Model model = xpp3Reader.read(reader);

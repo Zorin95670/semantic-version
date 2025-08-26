@@ -109,12 +109,12 @@ mvn io.github.zorin95670:semantic-version:release -DtagPrefix=plugin-a@
 
 ---
 
-### 📂 Specifying the Working Directory (`basedir`)
+### 📂 Specifying the Working Directory (`workingdir`)
 
-All plugin goals support the `basedir` parameter, which determines the directory where the command operates.
+All plugin goals support the `workingdir` parameter, which determines the directory where the command operates.
 
 * **Default:** The current working directory where the command is executed.
-* **Override:** You can explicitly set the directory using `-Dbasedir=/path/to/your/project`.
+* **Override:** You can explicitly set the directory using `-Dworkingdir=/path/to/your/project`.
 
 #### Examples:
 
@@ -123,12 +123,12 @@ All plugin goals support the `basedir` parameter, which determines the directory
 mvn io.github.zorin95670:semantic-version:changelog \
   -DtagPrefix=plugin-a@ \
   -Dscope=plugin-a \
-  -Dbasedir=plugins/plugin-a
+  -Dworkingdir=plugins/plugin-a
 
 # Run release from a custom folder
 mvn io.github.zorin95670:semantic-version:release \
   -DtagPrefix=plugin-b@ \
-  -Dbasedir=/absolute/path/to/plugin-b
+  -Dworkingdir=/absolute/path/to/plugin-b
 ```
 
 ---

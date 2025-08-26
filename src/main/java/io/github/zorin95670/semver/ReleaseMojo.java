@@ -28,6 +28,9 @@ public class ReleaseMojo extends AbstractMojo {
     @Parameter(property = "basedir", defaultValue = "${basedir}", readonly = true)
     private File basedir;
 
+    @Parameter(property = "workingdir", defaultValue = "${basedir}", readonly = true)
+    private File workingdir;
+
     public void execute() throws MojoExecutionException {
         if (scope == null) {
             scope = "";
@@ -35,9 +38,10 @@ public class ReleaseMojo extends AbstractMojo {
         if (tagPrefix == null) {
             tagPrefix = "v";
         }
+
         MavenService mavenService = new MavenService(project);
         GitService gitService = new GitService(basedir);
-        ChangelogService changelogService = new ChangelogService(basedir);
+        ChangelogService changelogService = new ChangelogService(workingdir);
 
         var lastTag = gitService.getLastTag(tagPrefix).orElse(null);
         var commits = gitService.getCommitsFrom(lastTag, scope);
@@ -50,8 +54,12 @@ public class ReleaseMojo extends AbstractMojo {
 
         var nextTag = opt.get();
 
-        mavenService.upgradeVersion(nextTag, tagPrefix);
-        gitService.add("pom.xml");
+        mavenService.upgradeVersion(
+            nextTag,
+            new File(workingdir.getAbsolutePath() + "/pom.xml"),
+            tagPrefix
+        );
+        gitService.add(".");
         gitService.commit(String.format("chore: bump to version %s [ci skip]", nextTag));
         gitService.tag(nextTag);
         changelogService.generateFromBeginning(
@@ -61,7 +69,7 @@ public class ReleaseMojo extends AbstractMojo {
             false,
             tagPrefix
         );
-        gitService.add("changelog.md");
+        gitService.add(".");
         gitService.amend();
         gitService.tag(nextTag);
     }
