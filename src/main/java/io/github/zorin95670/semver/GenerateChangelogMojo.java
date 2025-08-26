@@ -22,7 +22,7 @@ public class GenerateChangelogMojo extends AbstractMojo {
     @Parameter(property = "dryRun", defaultValue = "false")
     private boolean dryRun;
 
-    @Parameter(defaultValue = "${project.basedir}", readonly = true)
+    @Parameter(property = "basedir", defaultValue = "${basedir}", readonly = true)
     private File basedir;
 
     public void execute() throws MojoExecutionException {
